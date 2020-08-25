@@ -1,11 +1,8 @@
-import { API } from 'homebridge';
+import { API } from "homebridge";
 
-import { PLATFORM_NAME } from './settings';
-import { ExampleHomebridgePlatform } from './platform'; 
+import { PLATFORM_NAME } from "./settings";
+import { WeatherStationPlatform } from "./WeatherStationPlatform";
 
-/**
- * This method registers the platform with Homebridge
- */
 export = (api: API) => {
-  api.registerPlatform(PLATFORM_NAME, ExampleHomebridgePlatform);
-}
+  api.registerPlatform(PLATFORM_NAME, WeatherStationPlatform);
+};

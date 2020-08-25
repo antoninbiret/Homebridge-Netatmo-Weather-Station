@@ -1,15 +1,61 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "NetatmoWeatherStation",
   "pluginType": "platform",
   "singular": true,
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+      "netatmoConnect": {
+        "title": "Netatmo Connect Credentials",
+        "type": "object",
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string",
+            "required": true,
+            "format": "email"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string",
+            "required": true
+          },
+          "clientID": {
+            "title": "Client ID",
+            "type": "string",
+            "required": true
+          },
+          "clientSecret": {
+            "title": "Client Secret",
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "watch": {
+        "type": "array",
+        "items": {
+          "title": "Device",
+          "type": "object",
+          "properties": {
+            "address": {
+              "title": "MAC address",
+              "type": "string",
+              "required": true
+            },
+            "auth": {
+              "title": "Auth Mode",
+              "type": "string",
+              "default": "form",
+              "oneOf": [
+                { "title": "Form", "enum": ["form"] },
+                { "title": "Basic Auth", "enum": ["basic"] },
+                { "title": "None", "enum": ["none"] }
+              ],
+              "required": true
+            }
+          }
+        }
       }
     }
   }
