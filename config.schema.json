@@ -32,27 +32,43 @@
           }
         }
       },
-      "watch": {
-        "type": "array",
-        "items": {
-          "title": "Device",
-          "type": "object",
-          "properties": {
-            "address": {
-              "title": "MAC address",
-              "type": "string",
-              "required": true
-            },
-            "auth": {
-              "title": "Auth Mode",
-              "type": "string",
-              "default": "form",
-              "oneOf": [
-                { "title": "Form", "enum": ["form"] },
-                { "title": "Basic Auth", "enum": ["basic"] },
-                { "title": "None", "enum": ["none"] }
-              ],
-              "required": true
+      "station": {
+        "title": "Station",
+        "type": "object",
+        "properties": {
+          "macAddress": {
+            "title": "MAC address",
+            "type": "string",
+            "default": "00:00:00:00:00:00",
+            "required": true
+          },
+          "modules": {
+            "title": "Modules",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "macAddress": {
+                  "title": "MAC address",
+                  "type": "string",
+                  "default": "00:00:00:00:00:00",
+                  "required": true
+                },
+                "types": {
+                  "type": "array",
+                  "items": {
+                    "title": "Type",
+                    "type": "string",
+                    "default": "Temperature",
+                    "oneOf": [
+                      { "title": "Temperature", "enum": ["Temperature"] },
+                      { "title": "Humidity", "enum": ["Humidity"] },
+                      { "title": "Pressure", "enum": ["Pressure"] }
+                    ],
+                    "required": true
+                  }
+                }
+              }
             }
           }
         }

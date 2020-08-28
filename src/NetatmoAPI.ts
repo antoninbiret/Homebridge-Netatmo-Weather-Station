@@ -3,6 +3,8 @@ import { Logger } from "homebridge";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import querystring from "querystring";
 
+import { WeatherStationAccessoryType } from "./WeatherStationAccessory";
+
 export class NetatmoAPI {
   private token?: string;
   private refreshToken?: string;
@@ -21,55 +23,16 @@ export class NetatmoAPI {
       // headers: { "X-Custom-Header": "foobar" },
     });
 
-    // this.client.interceptors.request.use(
-    //   (config) => {
-    //     // const token = localStorageService.getAccessToken();
-    //     if (this.token) {
-    //       this.log.info("injecting token");
-    //       config.headers["Authorization"] = `Bearer ${this.token}`;
-    //     } else {
-    //       this.log.info("NOT injecting token");
-    //     }
-    //     // config.headers['Content-Type'] = 'application/json';
-    //     return config;
-    //   },
-    //   (error) => {
-    //     Promise.reject(error);
-    //   }
-    // );
-
     this.client.interceptors.response.use(
       (response) => {
         return response;
       },
       (error) => {
         const originalRequest = error.config;
-        // if (error.response.status === 400 && !this.token) {
-        //   this.log.info("Performing login...");
-        //   // Login
-        //   return this.getToken(
-        //     {
-        //       username: this.username,
-        //       password: this.password,
-        //       grant_type: "password",
-        //     },
-        //     originalRequest
-        //   );
-        // } else
         if (error.response.status === 401 && !originalRequest._retry) {
           this.log.info("Refreshing token...");
           return this.performRefreshToken(originalRequest);
         }
-        //       if (
-        //         error.response.status ===
-        //         401 /*&& originalRequest.url ===
-        //  'http://13.232.130.60:8081/v1/auth/token*/
-        //       ) {
-        //         log.info("originalRequest.url =>", originalRequest.url);
-        //         // router.push('/login');
-        //         return Promise.reject(error);
-        //       }
-
         return Promise.reject(error);
       }
     );
@@ -122,32 +85,25 @@ export class NetatmoAPI {
 
   async getMeasure(
     deviceID: string,
-    moduleID: string
-    // type: NetatmoAccessoryType
+    moduleID: string,
+    types: Array<WeatherStationAccessoryType>
   ) {
     const dateEnd = Math.floor(Date.now() / 1000);
-    const dateBegin = dateEnd - 60 * 60; //
-
+    const dateBegin = dateEnd - 60 * 60; // 1 hour
+    this.log.info("strigifyTypes: ", this.strigifyTypes(types));
     const response = await this.performRequest("/getmeasure", {
       date_begin: dateBegin.toString(),
       date_end: dateEnd.toString(),
       device_id: deviceID,
       module_id: moduleID,
-      scale: "max",
-      type: "Temperature,Humidity",
+      scale: "1hour",
+      type: this.strigifyTypes(types),
     });
 
     const body = response.data.body;
     const measure = body[body.length - 1];
     const values = measure.value[0];
-    const temperature = values[0];
-    const humidity = values[1];
-    const state = {
-      temperature,
-      humidity,
-    };
-    this.log.info("state =>", state);
-    return state;
+    return values;
   }
 
   private async performRequest(endPoint: string, data: any) {
@@ -161,5 +117,9 @@ export class NetatmoAPI {
       },
       data,
     });
+  }
+
+  private strigifyTypes(types: Array<WeatherStationAccessoryType>): string {
+    return types.join(",");
   }
 }
