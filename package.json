@@ -1,6 +1,6 @@
 {
   "private": true,
-  "displayName": "Homebridge Netatmo Weather Station Plugin",
+  "displayName": "Netatmo Weather Station",
   "name": "homebridge-netatmo-weather-station",
   "version": "1.0.0",
   "description": "A short description about what your plugin does.",
